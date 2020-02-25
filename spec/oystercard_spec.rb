@@ -36,7 +36,7 @@ describe Oystercard do
 
   describe '#touch_in' do
     it "raises an error when you don't have the minimum amount" do
-      expect { subject.touch_in }.to raise_error "There is not enough money on your card"
+      expect { subject.touch_in("Hammersmith") }.to raise_error "There is not enough money on your card"
     end
 
     it 'can touch in' do
@@ -45,8 +45,14 @@ describe Oystercard do
 
     it "knows when you're in a journey" do
       subject.top_up(10)
-      subject.touch_in
+      subject.touch_in("Liverpool Street")
       expect(subject).to be_in_journey 
+    end
+
+    it "remembers the entry station" do
+      subject.top_up(10)
+      subject.touch_in("Kings Cross")
+      expect(subject.entry_station).to eq "Kings Cross"
     end
   end
 
@@ -62,8 +68,15 @@ describe Oystercard do
 
     it "touch out reduces balance by minimum fare" do
       # subject.top_up(5)
-      # subject.touch_in
+      # subject.touch_in("Liverpool Street")
       expect { subject.touch_out }.to change{ subject.balance }.by(-Oystercard::MINIMUM)
+    end
+
+    it "entry station is nil after touching out" do
+      subject.top_up(10)
+      subject.touch_in("Liverpool Street")
+      subject.touch_out
+      expect(subject.entry_station).to eq nil
     end
 
 end
