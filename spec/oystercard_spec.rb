@@ -62,22 +62,41 @@ describe Oystercard do
     end
 
     it "knows when you're in a journey" do
-      subject.touch_out
+      subject.touch_out("Hammersmith")
       expect(subject.in_journey?).to eq false
     end
 
     it "touch out reduces balance by minimum fare" do
       # subject.top_up(5)
       # subject.touch_in("Liverpool Street")
-      expect { subject.touch_out }.to change{ subject.balance }.by(-Oystercard::MINIMUM)
+      expect { subject.touch_out("Hammersmith") }.to change{ subject.balance }.by(-Oystercard::MINIMUM)
     end
 
     it "entry station is nil after touching out" do
       subject.top_up(10)
       subject.touch_in("Liverpool Street")
-      subject.touch_out
+      subject.touch_out("Victoria")
       expect(subject.entry_station).to eq nil
     end
 
-end
+    it "remembers the exit station" do
+      subject.top_up(10)
+      subject.touch_in("Kings Cross")
+      subject.touch_out("Liverpool Street")
+      expect(subject.exit_station).to eq "Liverpool Street"
+    end
+  end
+
+    describe '#journey_history' do
+      it "is empty to being with" do
+        expect(subject.journey_history).to eq []
+      end
+
+      it "can store a journey" do
+        subject.top_up(10)
+        subject.touch_in("Kings Cross")
+        subject.touch_out("Liverpool Street")
+        expect(subject.journey_history).to eq [{:entry=>"Kings Cross", :exit=>"Liverpool Street"}]
+      end
+  end
 end
