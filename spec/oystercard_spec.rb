@@ -22,16 +22,17 @@ describe Oystercard do
     end
   end
 
-  describe '#deduct' do
-    it 'can deduct money from the card' do
-      expect(subject).to respond_to(:deduct).with(1).argument
-    end
+  # no longer needed now that deduct is a private method
+  # describe '#deduct' do
+  #   it 'can deduct money from the card' do
+  #     expect(subject).to respond_to(:deduct).with(1).argument
+  #   end
 
-    it "can take money from the card" do
-      subject.deduct(5)
-      expect(subject.balance).to eq -5
-    end
-  end
+  #   it "can take money from the card" do
+  #     subject.deduct(5)
+  #     expect(subject.balance).to eq -5
+  #   end
+  # end
 
   describe '#touch_in' do
     it "raises an error when you don't have the minimum amount" do
@@ -45,7 +46,7 @@ describe Oystercard do
     it "knows when you're in a journey" do
       subject.top_up(10)
       subject.touch_in
-      expect(subject.in_journey?).to eq true
+      expect(subject).to be_in_journey 
     end
   end
 
@@ -58,6 +59,12 @@ describe Oystercard do
       subject.touch_out
       expect(subject.in_journey?).to eq false
     end
-  end
 
+    it "touch out reduces balance by minimum fare" do
+      # subject.top_up(5)
+      # subject.touch_in
+      expect { subject.touch_out }.to change{ subject.balance }.by(-Oystercard::MINIMUM)
+    end
+
+end
 end
