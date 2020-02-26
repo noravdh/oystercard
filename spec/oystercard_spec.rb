@@ -52,23 +52,28 @@ describe Oystercard do
     it "remembers the entry station" do
       subject.top_up(10)
       subject.touch_in("Kings Cross")
-      expect(subject.entry_station).to eq "Kings Cross"
+      subject.touch_out("Hammersmith")
+      expect(subject.journey_history[0][:entry_station]).to eq "Kings Cross"
     end
   end
 
   describe '#touch_out' do
     it 'can touch out' do
+      subject.top_up(5)
+      subject.touch_in("Liverpool Street")
       expect(subject).to respond_to(:touch_out)
     end
 
     it "knows when you're in a journey" do
+      subject.top_up(5)
+      subject.touch_in("Liverpool Street")
       subject.touch_out("Hammersmith")
       expect(subject.in_journey?).to eq false
     end
 
     it "touch out reduces balance by minimum fare" do
-      # subject.top_up(5)
-      # subject.touch_in("Liverpool Street")
+      subject.top_up(5)
+      subject.touch_in("Liverpool Street")
       expect { subject.touch_out("Hammersmith") }.to change{ subject.balance }.by(-Oystercard::MINIMUM)
     end
 
@@ -83,7 +88,7 @@ describe Oystercard do
       subject.top_up(10)
       subject.touch_in("Kings Cross")
       subject.touch_out("Liverpool Street")
-      expect(subject.exit_station).to eq "Liverpool Street"
+      expect(subject.journey_history[0][:exit_station]).to eq "Liverpool Street"
     end
   end
 
@@ -96,7 +101,25 @@ describe Oystercard do
         subject.top_up(10)
         subject.touch_in("Kings Cross")
         subject.touch_out("Liverpool Street")
-        expect(subject.journey_history).to eq [{:entry=>"Kings Cross", :exit=>"Liverpool Street"}]
+        expect(subject.journey_history).to eq [{:entry_station=>"Kings Cross", :exit_station=>"Liverpool Street"}]
       end
   end
+end
+
+describe Journey do
+  it "can calculate a fare at touch out" do
+    oystercard = Oystercard.new
+    oystercard.top_up(10)
+    oystercard.touch_in("Kings Cross")
+    oystercard.touch_out("Hammersmith")
+    expect(oystercard.journey.fare).to eq Oystercard::MINIMUM
+  end
+
+  it "returns penalty when you miss an entry or exit" do
+    oystercard = Oystercard.new
+    oystercard.top_up(10)
+    oystercard.touch_in("Kings Cross")
+    expect(oystercard.journey.fare).to eq Oystercard::PENALTY
+  end
+
 end
