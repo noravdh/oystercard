@@ -13,6 +13,9 @@ class Oystercard
   end
 
   def touch_in(station)
+    if @journey
+      deduct(@journey.fare)
+    end
     fail "There is not enough money on your card" if @balance < MINIMUM
 
     @in_journey = true
@@ -20,9 +23,12 @@ class Oystercard
   end
 
   def touch_out(station)
-    deduct(MINIMUM)
+    if !@journey
+      @journey = Journey.new  
+    end
     @in_journey = false
     conclude_journey(station)
+    deduct(@journey.fare)
   end
 
   def top_up(amount)
