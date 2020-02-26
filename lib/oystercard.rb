@@ -1,4 +1,4 @@
-require "station"
+# require "station"
 
 class Oystercard
   LIMIT = 90
@@ -13,8 +13,8 @@ class Oystercard
   end
 
   def touch_in(station)
-    if @journey
-      deduct(@journey.fare)
+    if in_journey
+        deduct(@journey.fare)
     end
     fail "There is not enough money on your card" if @balance < MINIMUM
 
