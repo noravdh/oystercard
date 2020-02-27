@@ -1,10 +1,11 @@
-# require "station"
+require "station"
+require "journey"
 
 class Oystercard
   LIMIT = 90
   MINIMUM = 1
   PENALTY = 6
-  attr_reader :balance, :entry_station, :exit_station, :journey_history, :in_journey, :journey
+  attr_reader :balance, :journey_history, :in_journey, :journey
 
   def initialize
     @balance = 0
@@ -13,9 +14,7 @@ class Oystercard
   end
 
   def touch_in(station)
-    if in_journey
-        deduct(@journey.fare)
-    end
+    deduct(@journey.fare) if in_journey
     fail "There is not enough money on your card" if @balance < MINIMUM
 
     @in_journey = true
@@ -23,12 +22,9 @@ class Oystercard
   end
 
   def touch_out(station)
-    if !@journey
-      @journey = Journey.new  
-    end
+    @journey = Journey.new if !@journey
     @in_journey = false
     conclude_journey(station)
-    deduct(@journey.fare)
   end
 
   def top_up(amount)
@@ -58,31 +54,7 @@ class Oystercard
   def conclude_journey(station)
     @journey.finish_journey(station)
     store_journey
+    deduct(@journey.fare)
   end
 end
 
-class Journey
-  attr_reader :journey, :entry_station, :exit_station
-  def initialize
-    @journey = {}
-  end
-
-  def start_journey(station)
-    @journey[:entry_station] = station
-    @entry_station = station
-  end
-
-  def finish_journey(station)
-    @journey[:exit_station] = station
-    @exit_station = station
-  end
-
-  def fare
-    if journey[:entry_station] && journey[:exit_station]
-      Oystercard::MINIMUM
-    else
-      Oystercard::PENALTY
-    end
-  end
-
-end
