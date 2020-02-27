@@ -42,12 +42,13 @@ describe Oystercard do
     it 'can touch in' do
       expect(subject).to respond_to(:touch_in)
     end
-
-    it "knows when you're in a journey" do
-      subject.top_up(10)
-      subject.touch_in("Liverpool Street")
-      expect(subject).to be_in_journey 
-    end
+    
+    # irrelevant now in_journey is in journey class
+    # it "knows when you're in a journey" do
+    #   subject.top_up(10)
+    #   subject.touch_in("Liverpool Street")
+    #   expect(subject).to be_in_journey 
+    # end
 
     it "remembers the entry station" do
       subject.top_up(10)
@@ -64,12 +65,13 @@ describe Oystercard do
       expect(subject).to respond_to(:touch_out)
     end
 
-    it "knows when you're in a journey" do
-      subject.top_up(5)
-      subject.touch_in("Liverpool Street")
-      subject.touch_out("Hammersmith")
-      expect(subject.in_journey?).to eq false
-    end
+    # irrelevant now in_journey is in journey class
+    # it "knows when you're in a journey" do
+    #   subject.top_up(5)
+    #   subject.touch_in("Liverpool Street")
+    #   subject.touch_out("Hammersmith")
+    #   expect(subject.in_journey?).to eq false
+    # end
 
     it "touch out reduces balance by minimum fare" do
       subject.top_up(5)

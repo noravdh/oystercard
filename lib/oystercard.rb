@@ -5,25 +5,25 @@ class Oystercard
   LIMIT = 90
   MINIMUM = 1
   PENALTY = 6
-  attr_reader :balance, :journey_history, :in_journey, :journey
+  attr_reader :balance, :journey_history, :journey
 
   def initialize
     @balance = 0
     @journey_history = []
-    @in_journey = false
+    # @in_journey = false
   end
 
   def touch_in(station)
-    deduct(@journey.fare) if in_journey
+    deduct(@journey.fare) if @journey && @journey.in_journey
     fail "There is not enough money on your card" if @balance < MINIMUM
 
-    @in_journey = true
+    # @in_journey = true
     make_journey(station)
   end
 
   def touch_out(station)
     @journey = Journey.new if !@journey
-    @in_journey = false
+    # @in_journey = false
     conclude_journey(station)
   end
 
@@ -31,10 +31,6 @@ class Oystercard
     fail "Maximum balance of #{LIMIT} exceeded" if @balance + amount > LIMIT
     
     @balance += amount
-  end
-
-  def in_journey?
-    @in_journey
   end
 
   private
