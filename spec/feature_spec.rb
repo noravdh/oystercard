@@ -11,3 +11,8 @@ p card.balance
 p card.touch_in("test3")
 p card.balance
 p card.journey_history
+p card.touch_out("test4")
+p card.balance
+p card.journey_history
+
+#should incomplete journeys be recorded in journey history?
