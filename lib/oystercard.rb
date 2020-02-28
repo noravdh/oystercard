@@ -10,20 +10,18 @@ class Oystercard
   def initialize
     @balance = 0
     @journey_history = []
-    # @in_journey = false
   end
 
   def touch_in(station)
     deduct(@journey.fare) if @journey && @journey.in_journey
     fail "There is not enough money on your card" if @balance < MINIMUM
 
-    # @in_journey = true
     make_journey(station)
   end
 
   def touch_out(station)
     @journey = Journey.new if !@journey
-    # @in_journey = false
+
     conclude_journey(station)
   end
 
